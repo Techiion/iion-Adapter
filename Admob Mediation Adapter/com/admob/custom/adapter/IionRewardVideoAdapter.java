@@ -29,7 +29,7 @@ import java.util.List;
  * Google Mobile ads IION Reward Video Adapter
  */
 public class IionRewardVideoAdapter extends Adapter implements MediationRewardedAd {
-    private final String TAG = "AlxRewardVideoAdapter";
+    private final String TAG = "IionRewardVideoAdapter";
     private static final String ALX_AD_UNIT_KEY = "parameter";
 
     private AlxRewardVideoAD alxRewardVideoAD;

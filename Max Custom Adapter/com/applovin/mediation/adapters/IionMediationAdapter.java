@@ -58,7 +58,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class IionMediationAdapter extends MediationAdapterBase implements MaxAdViewAdapter, MaxInterstitialAdapter, MaxRewardedAdapter, MaxNativeAdAdapter {
     private static final String TAG = "IionMediationAdapter";
     // IION Adapter version
-    private static final String ADAPTER_VERSION = "3.5.2";
+    private static final String ADAPTER_VERSION = "3.8.3";
 
     private static final int DEFAULT_IMAGE_TASK_TIMEOUT_SECONDS = 10;
 
@@ -97,7 +97,7 @@ public class IionMediationAdapter extends MediationAdapterBase implements MaxAdV
                 return;
             } else {
                 Log.d(TAG, "alx-applovin-init:isdebug=" + isdebug);
-                if(TextUtils.equals(isdebug,"true")){
+                if (TextUtils.equals(isdebug, "true")) {
                     AlxAdSDK.setDebug(true);
                 }
                 AlxAdSDK.init(context, token, sid, appid, new AlxSdkInitCallback() {
@@ -110,9 +110,20 @@ public class IionMediationAdapter extends MediationAdapterBase implements MaxAdV
                 // // set GDPR
                 // // Subject to GDPR Flag: Please pass a Boolean value to indicate if the user is subject to GDPR regulations or not.
                 // // Your app should make its own determination as to whether GDPR is applicable to the user or not.
-                // AlxAdSDK.setSubjectToGDPR(true);
+                SharedPreferences Preferences = PreferenceManager.getDefaultSharedPreferences(context);
+                String tcString = Preferences.getString("IABTCF_TCString", "");
+                int gdprApplies = Preferences.getInt("IABTCF_gdprApplies", 0);
+                Log.d(TAG, "alx-applovin-init:tcString= " + tcString + " gdprApplies: " + gdprApplies);
+                if (gdprApplies != 0) {
+                    AlxAdSDK.setSubjectToGDPR(true);
 
-                if (parameters != null) {
+                } else {
+                    AlxAdSDK.setSubjectToGDPR(false);
+                }
+
+                if (!tcString.isEmpty()) {
+                    AlxAdSDK.setUserConsent(tcString);
+                } else if (parameters != null) {
                     // Set GDPR Consent value
                     String strGDPRConsent = "0";
                     if (TextUtils.isEmpty(parameters.getConsentString())) {

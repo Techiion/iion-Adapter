@@ -7,6 +7,6 @@ package com.ironsource.adapters.custom.iion;
  */
 public interface IionMetaInf {
 
-    String ADAPTER_VERSION = "3.5.2";
+    String ADAPTER_VERSION = "3.8.3";
 
 }
