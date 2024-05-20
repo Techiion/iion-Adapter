@@ -2,6 +2,8 @@ package com.ironsource.adapters.custom.iion;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -21,7 +23,7 @@ public class IionCustomAdapter extends BaseAdapter {
     private String appid = "";
     private String sid = "";
     private String token = "";
-    private Boolean isdebug = true;
+    private Boolean isdebug = false;
     private Map<String, Object> serverExtras;
     private NetworkInitializationListener mNetworkInitializationListener;
 
@@ -46,12 +48,24 @@ public class IionCustomAdapter extends BaseAdapter {
                         }
                     }
                 });
-//                // set GDPR
-//                // Subject to GDPR Flag: Please pass a Boolean value to indicate if the user is subject to GDPR regulations or not.
-//                // Your app should make its own determination as to whether GDPR is applicable to the user or not.
-//                AlxAdSDK.setSubjectToGDPR(true);
-//                // set GDPR Consent
-//                AlxAdSDK.setUserConsent("1");
+                // set GDPRSubject to GDPR Flag: Please pass a Boolean value to indicate if the user is subject to GDPR regulations or not.
+                // Your app should make its own determination as to whether GDPR is applicable to the user or not.
+                SharedPreferences Preferences = PreferenceManager.getDefaultSharedPreferences(context);
+                String tcString = Preferences.getString("IABTCF_TCString", "");
+                int gdprApplies = Preferences.getInt("IABTCF_gdprApplies", 0);
+                Log.d(TAG, "alx-ironSource-init:tcString= " + tcString + " gdprApplies: " + gdprApplies);
+                if (gdprApplies != 0) {
+                    AlxAdSDK.setSubjectToGDPR(true);
+                } else {
+                    AlxAdSDK.setSubjectToGDPR(false);
+                }
+                if (!tcString.isEmpty()) {
+                    AlxAdSDK.setUserConsent(tcString);
+                } else {
+                    // Set GDPR Consent value
+                    String strGDPRConsent = "0";
+                    AlxAdSDK.setUserConsent(strGDPRConsent);
+                }
 //                // set COPPA
 //                AlxAdSDK.setBelowConsentAge(true);
 //                // set CCPA
