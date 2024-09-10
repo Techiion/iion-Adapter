@@ -14,7 +14,9 @@ import com.ironsource.mediationsdk.adunit.adapter.utility.AdData;
 import com.ironsource.mediationsdk.adunit.adapter.utility.AdapterErrorType;
 import com.ironsource.mediationsdk.model.NetworkSettings;
 
-
+/**
+ * IronSource 激励广告适配器
+ */
 public class IionCustomRewardedVideo extends BaseRewardedVideo<IionCustomAdapter> {
 
     private static final String TAG = "IionCustomRewardedVideo";
