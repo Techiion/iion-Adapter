@@ -53,12 +53,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Applovin ads IION Adapter
+ *  IION MAX Adapter
  */
 public class IionMediationAdapter extends MediationAdapterBase implements MaxAdViewAdapter, MaxInterstitialAdapter, MaxRewardedAdapter, MaxNativeAdAdapter {
+
+    String ADAPTER_VERSION = "3.9.0";
+
     private static final String TAG = "IionMediationAdapter";
-    // IION Adapter version
-    private static final String ADAPTER_VERSION = "3.8.3";
 
     private static final int DEFAULT_IMAGE_TASK_TIMEOUT_SECONDS = 10;
 
@@ -77,7 +78,7 @@ public class IionMediationAdapter extends MediationAdapterBase implements MaxAdV
 
     @Override
     public void initialize(MaxAdapterInitializationParameters parameters, Activity activity, final OnCompletionListener onCompletionListener) {
-        Log.d(TAG, "initialize alx sdk……");
+        Log.d(TAG, "initialize iion sdk……");
         Log.d(TAG, "alx-applovin-adapter-version:" + ADAPTER_VERSION);
         try {
             status = InitializationStatus.INITIALIZING;
@@ -87,18 +88,26 @@ public class IionMediationAdapter extends MediationAdapterBase implements MaxAdV
             String appid = bundle.getString("appid");
             String sid = bundle.getString("sid");
             String token = bundle.getString("token");
-            String isdebug = bundle.getString("isdebug");
-            Log.d(TAG, "alx-applovin-init:token=" + token + "  sid=" + sid + " appid=" + appid);
+            String debug = bundle.getString("isdebug");
+            Boolean isDebug = null;
+            if (debug != null) {
+                if (debug.equalsIgnoreCase("true")) {
+                    isDebug = Boolean.TRUE;
+                } else if (debug.equalsIgnoreCase("false")) {
+                    isDebug = Boolean.FALSE;
+                }
+            }
+
+
+            Log.d(TAG, "alx-applovin-init: token=" + token + "  sid=" + sid + " appid=" + appid);
 
             if (TextUtils.isEmpty(appid) || TextUtils.isEmpty(sid) || TextUtils.isEmpty(token)) {
                 Log.d(TAG, "initialize alx params: appid or sid or token is null");
                 status = InitializationStatus.DOES_NOT_APPLY;
                 onCompletionListener.onCompletion(status, null);
-                return;
             } else {
-                Log.d(TAG, "alx-applovin-init:isdebug=" + isdebug);
-                if (TextUtils.equals(isdebug, "true")) {
-                    AlxAdSDK.setDebug(true);
+                if (isDebug != null) {
+                    AlxAdSDK.setDebug(isDebug.booleanValue());
                 }
                 AlxAdSDK.init(context, token, sid, appid, new AlxSdkInitCallback() {
                     @Override
@@ -147,11 +156,11 @@ public class IionMediationAdapter extends MediationAdapterBase implements MaxAdV
                             + " isAgeRestrictedUser:" + parameters.isAgeRestrictedUser()
                             + " hasUserConsent-2:" + AppLovinPrivacySettings.hasUserConsent(context));
                 }
-
                 // // set COPPA true or false
                 // AlxAdSDK.setBelowConsentAge(true);
                 // // set CCPA
                 // AlxAdSDK.subjectToUSPrivacy("1YYY");
+
             }
         } catch (Exception e) {
             Log.d(TAG, "initialize iion sdk error:" + e.getMessage());
