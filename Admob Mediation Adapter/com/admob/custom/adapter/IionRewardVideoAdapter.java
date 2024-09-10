@@ -37,7 +37,7 @@ public class IionRewardVideoAdapter extends Adapter implements MediationRewarded
     private String appid = "";
     private String sid = "";
     private String token = "";
-    private Boolean isdebug = false;
+    private Boolean isDebug = null;
     private Context mContext;
     private MediationAdLoadCallback<MediationRewardedAd, MediationRewardedAdCallback> mediationAdLoadCallBack;
     private MediationRewardedAdCallback mMediationRewardedAdCallback;
@@ -149,9 +149,13 @@ public class IionRewardVideoAdapter extends Adapter implements MediationRewarded
                     , AlxAdSDK.getNetWorkName()));
             return false;
         }
+
         try {
-            Log.d(TAG, "alx token: " + token + " alx appid: " + appid + "alx sid: " + sid);
+            Log.i(TAG,  " alx token: " + token + " alx appid: " + appid + "alx sid: " + sid);
             // init
+            if (isDebug != null) {
+                AlxAdSDK.setDebug(isDebug.booleanValue());
+            }
             AlxAdSDK.init(context, token, sid, appid, new AlxSdkInitCallback() {
                 @Override
                 public void onInit(boolean isOk, String msg) {
@@ -239,17 +243,14 @@ public class IionRewardVideoAdapter extends Adapter implements MediationRewarded
                     });
                 }
             });
-//                // set GDPR
-//                // Subject to GDPR Flag: Please pass a Boolean value to indicate if the user is subject to GDPR regulations or not.
-//                // Your app should make its own determination as to whether GDPR is applicable to the user or not.
-//                AlxAdSDK.setSubjectToGDPR(true);
-//                // set GDPR Consent
-//                AlxAdSDK.setUserConsent("1");
-//                // set COPPA
-//                AlxAdSDK.setBelowConsentAge(true);
-//                // set CCPA
-//                AlxAdSDK.subjectToUSPrivacy("1YYY");
-            AlxAdSDK.setDebug(isdebug);
+//            // set GDPR
+//            AlxAdSDK.setSubjectToGDPR(true);
+//            // set GDPR Consent
+//            AlxAdSDK.setUserConsent("1");
+//            // set COPPA
+//            AlxAdSDK.setBelowConsentAge(true);
+//            // set CCPA
+//            AlxAdSDK.subjectToUSPrivacy("1YYY");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -269,9 +270,13 @@ public class IionRewardVideoAdapter extends Adapter implements MediationRewarded
             sid = json.getString("sid");
             token = json.getString("token");
             unitid = json.getString("unitid");
-            String debug = json.optString("isdebug", "false");
-            if (TextUtils.equals(debug, "true")) {
-                isdebug = true;
+            String debug = json.optString("isdebug");
+            if (debug != null) {
+                if (debug.equalsIgnoreCase("true")) {
+                    isDebug = Boolean.TRUE;
+                } else if (debug.equalsIgnoreCase("false")) {
+                    isDebug = Boolean.FALSE;
+                }
             }
         } catch (Exception e) {
             Log.e(TAG, e.getMessage() + "");

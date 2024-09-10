@@ -37,8 +37,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 /**
- * Google Mobile ads IION Native ad Adapter
+ * Google Mobile ads IION Native Adapter
  */
 public class IionNativeAdapter extends Adapter {
     private static final String TAG = "IionNativeAdapter";
@@ -47,7 +48,7 @@ public class IionNativeAdapter extends Adapter {
     private String appid = "";
     private String sid = "";
     private String token = "";
-    private Boolean isdebug = false;
+    private Boolean isDebug = null;
 
     private MediationAdLoadCallback<UnifiedNativeAdMapper, MediationNativeAdCallback> mMediationLoadCallback;
     private MediationNativeAdCallback mMediationEventCallback;
@@ -101,25 +102,25 @@ public class IionNativeAdapter extends Adapter {
         }
 
         try {
-            Log.i(TAG, "alx token: " + token + " alx appid: " + appid + "alx sid: " + sid);
+            Log.i(TAG, " alx token: " + token + " alx appid: " + appid + "alx sid: " + sid);
             // init
+            if (isDebug != null) {
+                AlxAdSDK.setDebug(isDebug.booleanValue());
+            }
             AlxAdSDK.init(context, token, sid, appid, new AlxSdkInitCallback() {
                 @Override
                 public void onInit(boolean isOk, String msg) {
                     loadAds(context, unitid);
                 }
             });
-//                // set GDPR
-//                // Subject to GDPR Flag: Please pass a Boolean value to indicate if the user is subject to GDPR regulations or not.
-//                // Your app should make its own determination as to whether GDPR is applicable to the user or not.
-//                AlxAdSDK.setSubjectToGDPR(true);
-//                // set GDPR Consent
-//                AlxAdSDK.setUserConsent("1");
-//                // set COPPA
-//                AlxAdSDK.setBelowConsentAge(true);
-//                // set CCPA
-//                AlxAdSDK.subjectToUSPrivacy("1YYY");
-            AlxAdSDK.setDebug(isdebug);
+//            // set GDPR
+//            AlxAdSDK.setSubjectToGDPR(true);
+//            // set GDPR Consent
+//            AlxAdSDK.setUserConsent("1");
+//            // set COPPA
+//            AlxAdSDK.setBelowConsentAge(true);
+//            // set CCPA
+//            AlxAdSDK.subjectToUSPrivacy("1YYY");
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
             e.printStackTrace();
@@ -179,9 +180,13 @@ public class IionNativeAdapter extends Adapter {
             sid = json.getString("sid");
             token = json.getString("token");
             unitid = json.getString("unitid");
-            String debug = json.optString("isdebug", "false");
-            if (TextUtils.equals(debug, "true")) {
-                isdebug = true;
+            String debug = json.optString("isdebug");
+            if (debug != null) {
+                if (debug.equalsIgnoreCase("true")) {
+                    isDebug = Boolean.TRUE;
+                } else if (debug.equalsIgnoreCase("false")) {
+                    isDebug = Boolean.FALSE;
+                }
             }
         } catch (Exception e) {
             Log.e(TAG, e.getMessage() + "");
